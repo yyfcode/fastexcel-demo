@@ -2,9 +2,12 @@ package io.github.yyfcode.fastexcel.demo.controller;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Date;
 
 import io.github.yyfcode.fastexcel.builder.WorkbookBuilder;
+import io.github.yyfcode.fastexcel.demo.entity.Owner;
+import io.github.yyfcode.fastexcel.demo.entity.Pet;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -149,6 +152,71 @@ public class ExcelWriteController {
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=cellRangeMerge.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Simple object write")
+	@PostMapping(value = "simpleObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void javaBeanWrite(HttpServletResponse response) throws Exception {
+		Owner george = new Owner();
+		george.setFullName("George Franklin");
+		george.setAddress("110 W. Liberty St.");
+		george.setCity("Madison");
+		george.setTelephone("6085551023");
+		Owner joe = new Owner();
+		joe.setFullName("Joe Bloggs");
+		joe.setAddress("123 Caramel Street");
+		joe.setCity("London");
+		joe.setTelephone("01616291589");
+		Workbook workbook = WorkbookBuilder.builder()
+			.createSheet("Sheet 1")
+			.rowType(Owner.class)
+			// All fields
+//			.createHeader()
+			// Partial fields
+			.createHeader("fullName", "address", "city", "telephone")
+			.createRows(Arrays.asList(george, joe))
+			.end()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=simpleObjectWrite.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Nested object write")
+	@PostMapping(value = "nestedObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void nestedObjectWrite(HttpServletResponse response) throws Exception {
+		Owner george = new Owner();
+		george.setFullName("George Franklin");
+		george.setAddress("110 W. Liberty St.");
+		george.setCity("Madison");
+		george.setTelephone("6085551023");
+		george.addPet(new Pet("dog1", "dog", new Date(), null));
+		george.addPet(new Pet("dog2", "dog", new Date(), null));
+		george.addPet(new Pet("dog3", "dog", new Date(), null));
+
+		Owner joe = new Owner();
+		joe.setFullName("Joe Bloggs");
+		joe.setAddress("123 Caramel Street");
+		joe.setCity("London");
+		joe.setTelephone("01616291589");
+		joe.addPet(new Pet("cat1", "cat", new Date(), null));
+		joe.addPet(new Pet("cat2", "cat", new Date(), null));
+
+		Workbook workbook = WorkbookBuilder.builder()
+			.createSheet("Sheet 1")
+			.rowType(Owner.class)
+			// All fields
+//			.createHeader()
+			// Partial fields
+			.createHeader("fullName", "address", "city", "telephone", "pets", "pets.name", "pets.birthday", "pets.type")
+			.createRows(Arrays.asList(george, joe))
+			.end()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite.xlsx");
 			workbook.write(out);
 		}
 	}
