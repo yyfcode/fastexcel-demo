@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.github.yyfcode</groupId>
             <artifactId>fastexcel</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
