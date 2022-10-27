@@ -1,16 +1,12 @@
-package io.github.yyfcode.fastexcel.demo.controller;
+package com.jeeapp.excel.demo.controller;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
-import io.github.yyfcode.fastexcel.builder.WorkbookBuilder;
-import io.github.yyfcode.fastexcel.demo.entity.Owner;
-import io.github.yyfcode.fastexcel.demo.entity.Pet;
-import io.github.yyfcode.fastexcel.demo.entity.Visit;
-import io.github.yyfcode.fastexcel.util.CellUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -26,11 +22,17 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.jeeapp.excel.builder.SheetBuilder;
+import com.jeeapp.excel.builder.WorkbookBuilder;
+import com.jeeapp.excel.demo.entity.Owner;
+import com.jeeapp.excel.demo.entity.Pet;
+import com.jeeapp.excel.demo.entity.Visit;
+import com.jeeapp.excel.util.CellUtils;
 
 /**
  * @author Justice
  */
-@Tag(name = "test excel write")
+@Tag(name = "Excel write")
 @Controller
 @RequestMapping("excelWrite")
 public class ExcelWriteController {
@@ -169,25 +171,14 @@ public class ExcelWriteController {
 	@Operation(summary = "Simple object write")
 	@PostMapping(value = "simpleObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void javaBeanWrite(HttpServletResponse response) throws Exception {
-		Owner george = new Owner();
-		george.setFullName("George Franklin");
-		george.setAddress("110 W. Liberty St.");
-		george.setCity("Madison");
-		george.setTelephone("6085551023");
-		Owner joe = new Owner();
-		joe.setFullName("Joe Bloggs");
-		joe.setAddress("123 Caramel Street");
-		joe.setCity("London");
-		joe.setTelephone("01616291589");
+		List<Owner> owners = createOwners();
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultColumnWidth(30)
 			.createSheet("Sheet 1")
 			.rowType(Owner.class)
-			// All fields
-//			.createHeader()
 			// Partial fields
 			.createHeader("fullName", "address", "city", "telephone")
-			.createRows(Arrays.asList(george, joe))
+			.createRows(owners)
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
@@ -199,33 +190,15 @@ public class ExcelWriteController {
 	@Operation(summary = "Nested object write")
 	@PostMapping(value = "nestedObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void nestedObjectWrite(HttpServletResponse response) throws Exception {
-		Owner george = new Owner();
-		george.setFullName("George Franklin");
-		george.setAddress("110 W. Liberty St.");
-		george.setCity("Madison");
-		george.setTelephone("6085551023");
-		george.addPet(new Pet("dog1", "dog", new Date(), 50, null));
-		george.addPet(new Pet("dog2", "dog", new Date(), 95, null));
-		george.addPet(new Pet("dog3", "dog", new Date(), 100, null));
-
-		Owner joe = new Owner();
-		joe.setFullName("Joe Bloggs");
-		joe.setAddress("123 Caramel Street");
-		joe.setCity("London");
-		joe.setTelephone("01616291589");
-		joe.addPet(new Pet("cat1", "cat", new Date(), 20, null));
-		joe.addPet(new Pet("cat2", "cat", new Date(), 90, null));
-
+		List<Owner> owners = createOwners();
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30)
 			.createSheet("Sheet 1")
 			.rowType(Owner.class)
-			// All fields
-//			.createHeader()
 			// Partial fields
 			.createHeader("fullName", "address", "city", "telephone", "pets.name", "pets.birthday", "pets.type")
-			.createRows(Arrays.asList(george, joe))
+			.createRows(owners)
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
@@ -237,6 +210,73 @@ public class ExcelWriteController {
 	@Operation(summary = "Nested object write 2")
 	@PostMapping(value = "nestedObjectWrite2", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void nestedObjectWrite2(HttpServletResponse response) throws Exception {
+		List<Owner> owners = createOwners();
+		Workbook workbook = WorkbookBuilder.builder()
+			.setDefaultRowHeight(30)
+			.setDefaultColumnWidth(30)
+			.createSheet("Sheet 1")
+			.matchingCell(cell -> {
+				// match health column
+				if (cell == null || cell.getColumnIndex() != 7) {
+					return false;
+				}
+				// health < 60
+				String cellValue = CellUtils.getCellValue(cell);
+				if (NumberUtils.isCreatable(cellValue)) {
+					return Integer.parseInt(cellValue) < 60;
+				}
+				return false;
+			})
+			.setStrikeout(true)
+			.setFontHeight(30)
+			.setFontColor(IndexedColors.RED.getIndex())
+			.addCellStyle()
+			.rowType(Owner.class)
+			// All fields
+			.createHeader()
+			.createRows(owners)
+			.end()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite2.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Nested object write 3")
+	@PostMapping(value = "nestedObjectWrite3", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void nestedObjectWrite3(HttpServletResponse response) throws Exception {
+		List<Owner> owners = createOwners();
+		WorkbookBuilder workbookBuilder = WorkbookBuilder.builder()
+			.setDefaultRowHeight(30)
+			.setDefaultColumnWidth(30);
+		SheetBuilder sheetBuilder = null;
+		for (Owner owner : owners) {
+			sheetBuilder = workbookBuilder.createSheet(owner.getFullName())
+				.rowType(Owner.class)
+				.createHeader("fullName", "address", "city", "telephone")
+				.createRow(owner)
+				.end()
+				.createRow()
+				.createRow(new Object[]{"Pets"})
+				.addCellRange(3, 3, 0, 6)
+				.merge()
+				.setRowHeight(50)
+				.rowType(Pet.class)
+				.createHeader()
+				.createRows(owner.getPets())
+				.end();
+		}
+		if (sheetBuilder != null) {
+			Workbook workbook = sheetBuilder.build();
+			try (ServletOutputStream out = response.getOutputStream()) {
+				response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite2.xlsx");
+				workbook.write(out);
+			}
+		}
+	}
+
+	private List<Owner> createOwners() {
 		Owner george = new Owner();
 		george.setFullName("George Franklin");
 		george.setAddress("110 W. Liberty St.");
@@ -272,36 +312,6 @@ public class ExcelWriteController {
 			new Visit("visit13", new Date(), "..."),
 			new Visit("visit14", new Date(), "...")
 		))));
-
-		Workbook workbook = WorkbookBuilder.builder()
-			.setDefaultRowHeight(30)
-			.setDefaultColumnWidth(30)
-			.createSheet("Sheet 1")
-			.matchingCell(cell -> {
-				// match health column
-				if (cell == null || cell.getColumnIndex() != 7) {
-					return false;
-				}
-				// health < 60
-				String cellValue = CellUtils.getCellValue(cell);
-				if (NumberUtils.isCreatable(cellValue)) {
-					return Integer.parseInt(cellValue) < 60;
-				}
-				return false;
-			})
-			.setStrikeout(true)
-			.setFontHeight(30)
-			.setFontColor(IndexedColors.RED.getIndex())
-			.addCellStyle()
-			.rowType(Owner.class)
-			// All fields
-			.createHeader()
-			.createRows(Arrays.asList(george, joe))
-			.end()
-			.build();
-		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite2.xlsx");
-			workbook.write(out);
-		}
+		return Arrays.asList(george, joe);
 	}
 }

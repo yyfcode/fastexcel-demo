@@ -1,15 +1,15 @@
-package io.github.yyfcode.fastexcel.demo.entity;
+package com.jeeapp.excel.demo.entity;
 
 import javax.validation.constraints.Digits;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty;
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty.Comment;
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty.Header;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import com.jeeapp.excel.annotation.ExcelProperty;
+import com.jeeapp.excel.annotation.ExcelProperty.Comment;
+import com.jeeapp.excel.annotation.ExcelProperty.Header;
 
 /**
  * Simple JavaBean domain object representing an owner.

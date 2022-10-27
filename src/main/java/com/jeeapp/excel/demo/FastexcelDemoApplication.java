@@ -1,4 +1,4 @@
-package io.github.yyfcode.fastexcel.demo;
+package com.jeeapp.excel.demo;
 
 import io.swagger.v3.oas.models.info.Info;
 import org.springdoc.core.GroupedOpenApi;
@@ -17,8 +17,8 @@ public class FastexcelDemoApplication {
 	public GroupedOpenApi fastexcelGroup() {
 		return GroupedOpenApi.builder()
 			.group("fastexcel")
-			.addOpenApiCustomiser(openApi -> openApi.info(new Info().title("Fast Excel Demo API").version("v1.0.2")))
-			.packagesToScan("io.github.yyfcode.fastexcel.demo")
+			.addOpenApiCustomiser(openApi -> openApi.info(new Info().title("Fast Excel Demo API").version("v0.0.x")))
+			.packagesToScan("com.jeeapp.excel.demo")
 			.build();
 	}
 }

@@ -1,17 +1,17 @@
-package io.github.yyfcode.fastexcel.demo.entity;
+package com.jeeapp.excel.demo.entity;
 
 import java.util.Date;
 import java.util.Set;
 
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty;
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty.Comment;
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty.Header;
-import io.github.yyfcode.fastexcel.annotation.ExcelProperty.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.DataValidationConstraint.ValidationType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import com.jeeapp.excel.annotation.ExcelProperty;
+import com.jeeapp.excel.annotation.ExcelProperty.Comment;
+import com.jeeapp.excel.annotation.ExcelProperty.Header;
+import com.jeeapp.excel.annotation.ExcelProperty.Validation;
 
 /**
  * Simple business object representing a pet.
