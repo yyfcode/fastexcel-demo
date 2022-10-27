@@ -25,7 +25,6 @@ import com.jeeapp.excel.model.Row;
 import com.jeeapp.excel.rowset.AnnotationBasedRowSetMapper;
 import com.jeeapp.excel.rowset.MappingResult;
 import com.jeeapp.excel.rowset.RowSet;
-import com.jeeapp.excel.rowset.RowSetMapper;
 import com.jeeapp.excel.rowset.RowSetReader;
 
 /**
@@ -57,7 +56,9 @@ public class ExcelReadController {
 	@Operation(summary = "Object read")
 	@PostMapping(value = "objectRead", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void objectRead(@RequestPart("file") MultipartFile file) throws Exception {
-		RowSetMapper<Store> rowSetMapper = new AnnotationBasedRowSetMapper<>(Store.class);
+		AnnotationBasedRowSetMapper<Store> rowSetMapper = new AnnotationBasedRowSetMapper<>(Store.class);
+		rowSetMapper.setConversionService(conversionService);
+		rowSetMapper.setValidator(validator);
 		RowSetReader rowSetReader = RowSetReader.open(file.getInputStream());
 		for (RowSet rowSet : rowSetReader) {
 			Store store = rowSetMapper.mapRowSet(rowSet);
