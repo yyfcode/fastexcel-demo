@@ -2,6 +2,7 @@ package com.jeeapp.excel.demo.controller;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,8 +10,11 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.DataValidation.ErrorStyle;
+import org.apache.poi.ss.usermodel.DataValidationConstraint.OperatorType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -37,9 +41,9 @@ import com.jeeapp.excel.util.CellUtils;
 @RequestMapping("excelWrite")
 public class ExcelWriteController {
 
-	@Operation(summary = "Simple write")
-	@PostMapping(value = "simpleWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void simpleWrite(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Create sheet")
+	@PostMapping(value = "createSheet", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createSheet(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.createSheet("Sheet 1")
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
@@ -52,16 +56,18 @@ public class ExcelWriteController {
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=simpleWrite.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=createSheet.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Default cell style")
-	@PostMapping(value = "defaultCellStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void defaultCellStyle(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Add default style")
+	@PostMapping(value = "addDefaultStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void addDefaultCellStyle(HttpServletResponse response) throws Exception {
 		// Default cell style
 		Workbook workbook = WorkbookBuilder.builder()
+			.setDefaultRowHeight(50)
+			.setDefaultColumnWidth(50)
 			.createSheet("Sheet 1")
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
@@ -73,14 +79,72 @@ public class ExcelWriteController {
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=defaultCellStyle.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=addDefaultStyle.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Custom cell style")
-	@PostMapping(value = "customCellStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void customCellStyle(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Create picture")
+	@PostMapping(value = "createPicture", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createPicture(HttpServletResponse response) throws Exception {
+		byte[] bytes = IOUtils.toByteArray(new URL("https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png")
+			.openStream());
+		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
+			.setDefaultRowHeight(100)
+			.createSheet("Sheet 1")
+			.addCellRange(0, 0, 0, 5)
+			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
+			.insert()
+			.merge()
+			.createCell(null)
+			.setRowHeight(50)
+			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
+			.insert()
+			.createCell(5, 5, null)
+			.setRowHeight(50)
+			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
+			.setSize(2, 2)
+			.insert()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=createPicture.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Create data validation")
+	@PostMapping(value = "createDataValidation", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createDataValidation(HttpServletResponse response) throws Exception {
+		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
+			.createSheet("Sheet 1")
+			.createValidation()
+			.setRegions(0, 0, 0, 0)
+			.createExplicitListConstraint("a", "b")
+			.showErrorBox("error", "wrong data")
+			.showPromptBox("hint", "select a or b")
+			.setErrorStyle(ErrorStyle.INFO)
+			.createValidation()
+			.setRegions(0, 0, 1, 1)
+			.createDateConstraint(OperatorType.BETWEEN, "2022-01-01", "2022-12-30", "yyyy-MM-dd")
+			.showErrorBox("error", "wrong date format")
+			.showPromptBox("hint", "yyyy-MM-dd")
+			.addValidationData()
+			.createValidation()
+			.setRegions(0, 0, 2, 2)
+			.createIntegerConstraint(OperatorType.BETWEEN, "50", "100")
+			.showErrorBox("error", "wrong number")
+			.showPromptBox("hint", "must be 50~100")
+			.addValidationData()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=createDataValidation.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Add cell style")
+	@PostMapping(value = "addCellStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void addCellStyle(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook())
 			// Set global cell style
 			.matchingAll()
@@ -99,6 +163,7 @@ public class ExcelWriteController {
 			.setFontColor(IndexedColors.RED)
 			.addCellStyle()
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.setRowHeight(100)
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
 			.createSheet("Sheet 2")
 			// Set cell style of Sheet 2
@@ -121,13 +186,13 @@ public class ExcelWriteController {
 			.createRow(new Object[]{"cell1", "cell2", "cell3"})
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=customCellStyle.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=addCellStyle.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Custom column style")
-	@PostMapping(value = "customColumnStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@Operation(summary = "add column style")
+	@PostMapping(value = "addColumnStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void customColumnStyle(HttpServletResponse response) throws Exception {
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultColumnWidth(40)
@@ -137,6 +202,7 @@ public class ExcelWriteController {
 			.addCellStyle()
 			.matchingColumn(1)
 			.setDataFormat("#.##00")
+			.setFontColor(IndexedColors.RED)
 			.addCellStyle()
 			.matchingColumn(2)
 			.setDataFormat("[=1]\"male\";[=2]\"female\"")
@@ -145,14 +211,14 @@ public class ExcelWriteController {
 			.createRow(new Object[]{new Date(), 123.1d, 2})
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=customColumnStyle.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=addColumnStyle.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "CellRange merge")
-	@PostMapping(value = "cellRangeMerge", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void cellRangeMerge(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Merge cell range")
+	@PostMapping(value = "mergeCellRange", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void mergeCellRange(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook())
 			.createSheet("Sheet 1")
 			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
@@ -160,17 +226,18 @@ public class ExcelWriteController {
 			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
 			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
 			.addCellRange(1, 2, 1, 2)
+			.setCellValue("cool")
 			.merge()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=cellRangeMerge.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=mergeCellRange.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Simple object write")
-	@PostMapping(value = "simpleObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void javaBeanWrite(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Create bean row")
+	@PostMapping(value = "createBeanRow", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createBeanRow(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultColumnWidth(30)
@@ -182,34 +249,34 @@ public class ExcelWriteController {
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=simpleObjectWrite.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=createBeanRow.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Nested object write")
-	@PostMapping(value = "nestedObjectWrite", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void nestedObjectWrite(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Create bean row with partial fields")
+	@PostMapping(value = "createBeanRowWithPartialFields", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createBeanRowWithPartialFields(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30)
 			.createSheet("Sheet 1")
 			.rowType(Owner.class)
-			// Partial fields
+			// partial fields
 			.createHeader("fullName", "address", "city", "telephone", "pets.name", "pets.birthday", "pets.type")
 			.createRows(owners)
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=createBeanRowWithPartialFields.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Nested object write 2")
-	@PostMapping(value = "nestedObjectWrite2", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void nestedObjectWrite2(HttpServletResponse response) throws Exception {
+	@Operation(summary = "Create nested bean row")
+	@PostMapping(value = "createNestedBeanRow", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createNestedBeanRow(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
@@ -238,14 +305,14 @@ public class ExcelWriteController {
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite2.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=createNestedBeanRow.xlsx");
 			workbook.write(out);
 		}
 	}
 
-	@Operation(summary = "Nested object write 3")
-	@PostMapping(value = "nestedObjectWrite3", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void nestedObjectWrite3(HttpServletResponse response) throws Exception {
+	@Operation(summary = "create nested bean sheet")
+	@PostMapping(value = "createNestedBeanSheet", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createNestedBeanSheet(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
 		WorkbookBuilder workbookBuilder = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
@@ -270,7 +337,7 @@ public class ExcelWriteController {
 		if (sheetBuilder != null) {
 			Workbook workbook = sheetBuilder.build();
 			try (ServletOutputStream out = response.getOutputStream()) {
-				response.setHeader("Content-disposition", "attachment; filename=nestedObjectWrite2.xlsx");
+				response.setHeader("Content-disposition", "attachment; filename=createNestedBeanSheet.xlsx");
 				workbook.write(out);
 			}
 		}
