@@ -1,6 +1,7 @@
 package com.jeeapp.excel.demo.entity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -43,4 +44,9 @@ public class Pet {
 		header = @Header(fillForegroundColor = IndexedColors.ORANGE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("visit list")))
 	private Set<Visit> visits;
+
+	@ExcelProperty(name = "foods", column = 4,
+		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND,
+			comment = @Comment("food list")))
+	private List<Food> foods;
 }

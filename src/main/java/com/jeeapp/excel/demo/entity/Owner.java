@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import org.apache.poi.ss.usermodel.DataValidationConstraint.ValidationType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import com.jeeapp.excel.annotation.ExcelProperty;
 import com.jeeapp.excel.annotation.ExcelProperty.Comment;
 import com.jeeapp.excel.annotation.ExcelProperty.Header;
+import com.jeeapp.excel.annotation.ExcelProperty.Validation;
 
 /**
  * Simple JavaBean domain object representing an owner.
@@ -23,7 +25,8 @@ public class Owner {
 	private String fullName;
 
 	@ExcelProperty(name = "address", column = 1,
-		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
+		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND),
+		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"dog1", "cat1"}))
 	private String address;
 
 	@ExcelProperty(name = "city", column = 2,

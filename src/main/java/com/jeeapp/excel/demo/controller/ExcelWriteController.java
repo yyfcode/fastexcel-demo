@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.jeeapp.excel.builder.SheetBuilder;
 import com.jeeapp.excel.builder.WorkbookBuilder;
+import com.jeeapp.excel.demo.entity.Food;
 import com.jeeapp.excel.demo.entity.Owner;
 import com.jeeapp.excel.demo.entity.Pet;
 import com.jeeapp.excel.demo.entity.Visit;
@@ -46,14 +47,14 @@ public class ExcelWriteController {
 	public void createSheet(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.createSheet("Sheet 1")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 2")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 3")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createSheet.xlsx");
@@ -69,14 +70,14 @@ public class ExcelWriteController {
 			.setDefaultRowHeight(50)
 			.setDefaultColumnWidth(50)
 			.createSheet("Sheet 1")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 2")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 3")
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=addDefaultStyle.xlsx");
@@ -92,22 +93,20 @@ public class ExcelWriteController {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.setDefaultRowHeight(100)
 			.createSheet("Sheet 1")
-			.addCellRange(0, 0, 0, 5)
-			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.insert()
+			.matchingRegion(0, 0, 0, 5)
+			.addPicture(bytes, Workbook.PICTURE_TYPE_PNG)
+			.addMergedRegion()
+			.setCellValue("aaaaaaa")
+			.setCommentText("aaa")
 			.end()
-			.createCell(null)
 			.setRowHeight(50)
-			.matchingActiveCell()
-			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.insert()
+			.matchingCell()
+			.addPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.end()
 			.createCell(5, 5, null)
 			.setRowHeight(50)
-			.matchingActiveCell()
-			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.setSize(2, 2)
-			.insert()
+			.matchingCell()
+			.addPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
@@ -121,17 +120,25 @@ public class ExcelWriteController {
 	public void createDataValidation(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.createSheet("Sheet 1")
-			.matchingRegion(0, 0, 0, 0)
+			.matchingCell(0, 0)
 			.createExplicitListConstraint("a", "b")
+			.showErrorBox("", "")
+			.showPromptBox("", "")
+			.setErrorStyle(ErrorStyle.INFO)
+			.end()
+			.matchingCell(1, 1)
+			.createExplicitListConstraint("c", "d")
 			.showErrorBox("error", "wrong data")
 			.showPromptBox("hint", "select a or b")
 			.setErrorStyle(ErrorStyle.INFO)
-			.matchingRegion(0, 0, 1, 1)
+			.end()
+			.matchingCell(0, 1)
 			.setDataFormat("yyyy-MM-dd")
 			.createDateConstraint(OperatorType.BETWEEN, "Date(2022,01,01)", "Date(2022,12,31)", "yyyy-MM-dd")
-			.showErrorBox("error", "wrong date format")
-			.showPromptBox("hint", "yyyy-MM-dd")
-			.matchingRegion(0, 0, 2, 2)
+			.showErrorBox("", "")
+			.showPromptBox("", "")
+			.end()
+			.matchingCell(0, 2)
 			.createIntegerConstraint(OperatorType.BETWEEN, "50", "100")
 			.showErrorBox("error", "wrong number")
 			.showPromptBox("hint", "must be 50~100")
@@ -157,34 +164,34 @@ public class ExcelWriteController {
 			.setBorder(BorderStyle.THIN)
 			.setVerticalAlignment(VerticalAlignment.CENTER)
 			.setAlignment(HorizontalAlignment.CENTER)
-			.addCellStyle()
+			.end()
 			.createSheet("Sheet 1")
 			// Set cell style of Sheet 1
 			.matchingAll()
 			.setFontColor(IndexedColors.RED)
-			.addCellStyle()
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.end()
+			.createRow("cell1", "cell2", "cell3")
 			.setRowHeight(100)
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 2")
 			// Set cell style of Sheet 2
 			.matchingAll()
 			.setFontColor(IndexedColors.BLUE)
-			.addCellStyle()
+			.end()
 			// Set cell style of Sheet 2 and row number > 0
 			.matchingCell(cell -> cell.getRowIndex() > 0)
 			.setFillForegroundColor(IndexedColors.GREY_25_PERCENT)
-			.addCellStyle()
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.end()
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 3")
 			// Set cell style of Sheet 3
 			.matchingAll()
 			.setFontColor(IndexedColors.GREEN)
 			.setItalic(true)
-			.addCellStyle()
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3"})
+			.end()
+			.createRow("cell1", "cell2", "cell3")
+			.createRow("cell1", "cell2", "cell3")
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=addCellStyle.xlsx");
@@ -194,22 +201,25 @@ public class ExcelWriteController {
 
 	@Operation(summary = "add column style")
 	@PostMapping(value = "addColumnStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void customColumnStyle(HttpServletResponse response) throws Exception {
+	public void addColumnStyle(HttpServletResponse response) throws Exception {
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultColumnWidth(40)
 			.createSheet("Sheet 1")
 			.matchingColumn(0)
 			.setDataFormat("yyyy-MM-dd")
-			.addCellStyle()
+			.end()
+			.matchingRegion(1, 5, 0, 0)
+			.setDataFormat("yyyy/MM/dd")
+			.fillUndefinedCells()
 			.matchingColumn(1)
 			.setDataFormat("#.##00")
 			.setFontColor(IndexedColors.RED)
-			.addCellStyle()
+			.end()
 			.matchingColumn(2)
 			.setDataFormat("[=1]\"male\";[=2]\"female\"")
-			.addCellStyle()
-			.createRow(new Object[]{new Date(), 22.121f, 1})
-			.createRow(new Object[]{new Date(), 123.1d, 2})
+			.end()
+			.createRow(new Date(), 22.121f, 1)
+			.createRow(new Date(), 123.1d, 2)
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=addColumnStyle.xlsx");
@@ -222,13 +232,13 @@ public class ExcelWriteController {
 	public void mergeCellRange(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook())
 			.createSheet("Sheet 1")
-			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
-			.createRow(new Object[]{"cell1", "cell2", "cell3", "cell4"})
-			.addCellRange(1, 2, 1, 2)
-			.setCellValue("cool")
-			.merge()
+			.createRow("cell1", "cell2", "cell3", "cell4")
+			.createRow("cell1", "", "cell3", "cell4")
+			.createRow("cell1", "cell4", "cell5", "cell4")
+			.createRow("cell1", "cell2", "cell3", "cell4")
+			.matchingRegion(1, 2, 1, 2)
+			.addMergedRegion()
+			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=mergeCellRange.xlsx");
@@ -247,7 +257,6 @@ public class ExcelWriteController {
 			// Partial fields
 			.createHeader("fullName", "address", "city", "telephone")
 			.createRows(owners)
-			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createBeanRow.xlsx");
@@ -267,7 +276,6 @@ public class ExcelWriteController {
 			// partial fields
 			.createHeader("fullName", "address", "city", "telephone", "pets.name", "pets.birthday", "pets.type")
 			.createRows(owners)
-			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createBeanRowWithPartialFields.xlsx");
@@ -282,6 +290,10 @@ public class ExcelWriteController {
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30)
+			.matchingAll()
+			.setBorder(BorderStyle.DOUBLE)
+			.setBorderColor(IndexedColors.CORNFLOWER_BLUE)
+			.end()
 			.createSheet("Sheet 1")
 			.matchingCell(cell -> {
 				// match health column
@@ -298,12 +310,11 @@ public class ExcelWriteController {
 			.setStrikeout(true)
 			.setFontHeight(30)
 			.setFontColor(IndexedColors.RED.getIndex())
-			.addCellStyle()
+			.end()
 			.rowType(Owner.class)
 			// All fields
 			.createHeader()
 			.createRows(owners)
-			.end()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createNestedBeanRow.xlsx");
@@ -326,9 +337,10 @@ public class ExcelWriteController {
 				.createRow(owner)
 				.end()
 				.createRow()
-				.createRow(new Object[]{"Pets"})
-				.addCellRange(3, 3, 0, 6)
-				.merge()
+				.createRow("Pets")
+				.matchingRegion(3, 3, 0, 8)
+				.addMergedRegion()
+				.end()
 				.setRowHeight(50)
 				.rowType(Pet.class)
 				.createHeader()
@@ -354,16 +366,38 @@ public class ExcelWriteController {
 			new Visit("visit1", new Date(), "..."),
 			new Visit("visit2", new Date(), "..."),
 			new Visit("visit3", new Date(), "...")
-		))));
+		)),
+			Arrays.asList(
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4)
+			)));
 		george.addPet(new Pet("dog2", "dog", new Date(), 95, new HashSet<>(Arrays.asList(
 			new Visit("visit4", new Date(), "...."),
-			new Visit("visit5", new Date(), "...")
-		))));
+			new Visit("visit5", new Date(), "..."))),
+			Arrays.asList(
+				new Food("1", 1),
+				new Food("4", 4)
+			)));
 		george.addPet(new Pet("dog3", "dog", new Date(), 100, new HashSet<>(Arrays.asList(
 			new Visit("visit6", new Date(), "..."),
 			new Visit("visit7", new Date(), "..."),
-			new Visit("visit8", new Date(), "...")
-		))));
+			new Visit("visit8", new Date(), "..."))),
+			Arrays.asList(
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4),
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4),
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4)
+			)));
 
 		Owner joe = new Owner();
 		joe.setFullName("Joe Bloggs");
@@ -373,13 +407,25 @@ public class ExcelWriteController {
 		joe.addPet(new Pet("cat1", "cat", new Date(), 20, new HashSet<>(Arrays.asList(
 			new Visit("visit9", new Date(), "..."),
 			new Visit("visit10", new Date(), "..."),
-			new Visit("visit11", new Date(), "...")
-		))));
+			new Visit("visit11", new Date(), "..."))),
+			Arrays.asList(
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4),
+				new Food("1", 1),
+				new Food("2", 2),
+				new Food("3", 3),
+				new Food("4", 4)
+			)));
 		joe.addPet(new Pet("cat2", "cat", new Date(), 90, new HashSet<>(Arrays.asList(
 			new Visit("visit12", new Date(), "..."),
 			new Visit("visit13", new Date(), "..."),
-			new Visit("visit14", new Date(), "...")
-		))));
+			new Visit("visit14", new Date(), "..."))),
+			Arrays.asList(
+				new Food("1", 1),
+				new Food("2", 2)
+			)));
 		return Arrays.asList(george, joe);
 	}
 }
