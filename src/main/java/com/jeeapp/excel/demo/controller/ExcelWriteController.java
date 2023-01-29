@@ -97,6 +97,7 @@ public class ExcelWriteController {
 			.addPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.addMergedRegion()
 			.setCellValue("aaaaaaa")
+			.matchingCell()
 			.setCommentText("aaa")
 			.end()
 			.setRowHeight(50)
