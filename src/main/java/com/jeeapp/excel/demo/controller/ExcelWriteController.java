@@ -97,7 +97,6 @@ public class ExcelWriteController {
 			.matchingRegion(0, 0, 0, 5)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.addMergedRegion()
-			.setCellValue("aaaaaaa")
 			.matchingCell()
 			.createCellComment("aaa")
 			.end()
@@ -172,6 +171,7 @@ public class ExcelWriteController {
 			.setAlignment(HorizontalAlignment.CENTER)
 			.end()
 			.createSheet("Sheet 1")
+			.setDefaultColumnWidth(15)
 			// Set cell style of Sheet 1
 			.matchingAll()
 			.setFontColor(IndexedColors.RED)
@@ -200,6 +200,7 @@ public class ExcelWriteController {
 			.setColumnHidden(true)
 			.end()
 			.createSheet("Sheet 3")
+			.setDefaultRowHeight(30)
 			// Set cell style of Sheet 3
 			.matchingAll()
 			.setFontColor(IndexedColors.GREEN)
@@ -210,6 +211,43 @@ public class ExcelWriteController {
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=addCellStyle.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "add row style")
+	@PostMapping(value = "addRowStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void addRowStyle(HttpServletResponse response) throws Exception {
+		Workbook workbook = WorkbookBuilder.builder()
+			.setDefaultColumnWidth(20)
+			.createSheet("Sheet 1")
+			.matchingRow(0)
+			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+			.setFillForegroundColor(IndexedColors.GREY_25_PERCENT)
+			.setBorder(BorderStyle.THIN)
+			.setBottomBorderColor(IndexedColors.RED)
+			.end()
+			.matchingRow(1)
+			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+			.setFillForegroundColor(IndexedColors.LIGHT_YELLOW)
+			.setBorder(BorderStyle.THIN)
+			.setBottomBorderColor(IndexedColors.BROWN)
+			.end()
+			.matchingRow(2)
+			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+			.setFillForegroundColor(IndexedColors.LIGHT_BLUE)
+			.setBorder(BorderStyle.THIN)
+			.setBottomBorderColor(IndexedColors.AQUA)
+			.end()
+			.matchingRow(3)
+			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+			.setFillForegroundColor(IndexedColors.LIGHT_ORANGE)
+			.setBorder(BorderStyle.THIN)
+			.setBottomBorderColor(IndexedColors.VIOLET)
+			.end()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=addRowStyle.xlsx");
 			workbook.write(out);
 		}
 	}
@@ -248,12 +286,24 @@ public class ExcelWriteController {
 		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook())
 			.createSheet("Sheet 1")
 			.createRow("cell1", "cell2", "cell3", "cell4")
-			.createRow("cell1", "", "cell3", "cell4")
+			.createRow("cell1", "1111", "cell3", "cell4")
 			.createRow("cell1", "cell4", "cell5", "cell4")
 			.createRow("cell1", "cell2", "cell3", "cell4")
 			.matchingRegion(1, 2, 1, 2)
+			.setBorder(BorderStyle.DOUBLE)
+			.setBorderColor(IndexedColors.GOLD)
+			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+			.setFillForegroundColor(IndexedColors.VIOLET)
+			.setFillBackgroundColor(IndexedColors.WHITE)
+			.setAlignment(HorizontalAlignment.CENTER)
+			.setVerticalAlignment(VerticalAlignment.CENTER)
 			.addMergedRegion()
-			.end()
+			.matchingCell(0, 0)
+			.setBorderColor(IndexedColors.DARK_RED)
+			.setBorder(BorderStyle.DOUBLE)
+			.setFontHeight(20)
+			 // add cell style to the defined cell
+			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=mergeCellRange.xlsx");
@@ -355,7 +405,6 @@ public class ExcelWriteController {
 				.createRow("Pets")
 				.matchingRegion(3, 3, 0, 8)
 				.addMergedRegion()
-				.end()
 				.matchingRow()
 				.setRowHeight(50)
 				.end()
