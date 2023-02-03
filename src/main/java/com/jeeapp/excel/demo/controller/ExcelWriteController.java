@@ -91,7 +91,7 @@ public class ExcelWriteController {
 		byte[] bytes = IOUtils.toByteArray(new URL("https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png")
 			.openStream());
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
-			.setDefaultRowHeight(100)
+			.setDefaultRowHeight(60)
 			.createSheet("Sheet 1")
 			.setDefaultColumnWidth(25)
 			.matchingRegion(0, 0, 0, 5)
@@ -101,14 +101,14 @@ public class ExcelWriteController {
 			.createCellComment("aaa")
 			.end()
 			.matchingRow()
-			.setRowHeight(50)
+			.setRowHeight(30)
 			.end()
-			.matchingCell()
+			.matchingCell(0, 6)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.end()
 			.createCell(5, 5)
 			.matchingRow()
-			.setRowHeight(50)
+			.setRowHeight(45)
 			.end()
 			.matchingCell()
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
@@ -302,7 +302,7 @@ public class ExcelWriteController {
 			.setBorderColor(IndexedColors.DARK_RED)
 			.setBorder(BorderStyle.DOUBLE)
 			.setFontHeight(20)
-			 // add cell style to the defined cell
+			// add cell style to the defined cell
 			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
