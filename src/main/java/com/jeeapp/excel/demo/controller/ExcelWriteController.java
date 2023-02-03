@@ -93,6 +93,7 @@ public class ExcelWriteController {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.setDefaultRowHeight(100)
 			.createSheet("Sheet 1")
+			.setDefaultColumnWidth(2)
 			.matchingRegion(0, 0, 0, 5)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.addMergedRegion()
@@ -106,7 +107,7 @@ public class ExcelWriteController {
 			.matchingCell()
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.end()
-			.createCell(5, 5, null)
+			.createCell(5, 5)
 			.matchingRow()
 			.setRowHeight(50)
 			.end()
@@ -139,8 +140,8 @@ public class ExcelWriteController {
 			.addValidationData()
 			// 设置格式
 			.setDataFormat("yyyy-MM-dd")
-			// 设置格式必须有值，否则单元格填值时不能格式化
-			.setCellValue(null)
+			// 设置格式必须创建单元格，否则单元格填值时不能格式化
+			.setBlank()
 			.matchingCell(0, 2)
 			.createIntegerConstraint(OperatorType.BETWEEN, "50", "100")
 			.showErrorBox("error", "wrong number")
