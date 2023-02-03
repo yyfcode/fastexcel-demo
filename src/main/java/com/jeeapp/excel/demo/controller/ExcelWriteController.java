@@ -93,7 +93,7 @@ public class ExcelWriteController {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.setDefaultRowHeight(100)
 			.createSheet("Sheet 1")
-			.setDefaultColumnWidth(2)
+			.setDefaultColumnWidth(25)
 			.matchingRegion(0, 0, 0, 5)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.addMergedRegion()
