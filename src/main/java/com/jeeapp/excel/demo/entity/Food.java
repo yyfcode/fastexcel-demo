@@ -20,7 +20,7 @@ public class Food {
 	@ExcelProperty(name = "name", column = 0,
 		header = @Header(fillForegroundColor = IndexedColors.TURQUOISE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("Health status of pets")),
-		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"dog", "cat"}))
+		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"meat", "water", "egg"}))
 	private String name;
 
 	@ExcelProperty(name = "quantity", column = 1,
