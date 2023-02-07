@@ -26,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.jeeapp.excel.builder.SheetBuilder;
 import com.jeeapp.excel.builder.WorkbookBuilder;
 import com.jeeapp.excel.demo.entity.Food;
 import com.jeeapp.excel.demo.entity.Owner;
@@ -64,7 +63,7 @@ public class ExcelWriteController {
 
 	@Operation(summary = "Add default style")
 	@PostMapping(value = "addDefaultStyle", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void addDefaultCellStyle(HttpServletResponse response) throws Exception {
+	public void addDefaultStyle(HttpServletResponse response) throws Exception {
 		// Default cell style
 		Workbook workbook = WorkbookBuilder.builder()
 			.setDefaultRowHeight(50)
@@ -72,6 +71,9 @@ public class ExcelWriteController {
 			.createSheet("Sheet 1")
 			.createRow("cell1", "cell2", "cell3")
 			.createRow("cell1", "cell2", "cell3")
+			.matchingLastRow()
+			.setRowHeight(100)
+			.addCellStyle()
 			.createSheet("Sheet 2")
 			.createRow("cell1", "cell2", "cell3")
 			.createRow("cell1", "cell2", "cell3")
@@ -97,22 +99,22 @@ public class ExcelWriteController {
 			.matchingRegion(0, 0, 0, 5)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
 			.addMergedRegion()
-			.matchingCell()
+			.matchingLastCell()
 			.createCellComment("aaa")
-			.end()
-			.matchingRow()
+			.addCellStyle()
+			.matchingLastRow()
 			.setRowHeight(30)
-			.end()
+			.addCellStyle()
 			.matchingCell(0, 6)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.end()
+			.addCellStyle()
 			.createCell(5, 5)
-			.matchingRow()
+			.matchingLastRow()
 			.setRowHeight(45)
-			.end()
-			.matchingCell()
+			.addCellStyle()
+			.matchingLastCell()
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.end()
+			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createPicture.xlsx");
@@ -131,7 +133,7 @@ public class ExcelWriteController {
 			.showPromptBox("hint", "select a or b")
 			.setErrorStyle(ErrorStyle.INFO)
 			.addValidationData()
-			.end()
+			.addCellStyle()
 			.matchingCell(0, 1)
 			.createDateConstraint(OperatorType.BETWEEN, "Date(2022,01,01)", "Date(2022,12,31)", "yyyy-MM-dd")
 			.showErrorBox("错误", "日期错误")
@@ -146,7 +148,7 @@ public class ExcelWriteController {
 			.showErrorBox("error", "wrong number")
 			.showPromptBox("hint", "must be 50~100")
 			.addValidationData()
-			.end()
+			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=createDataValidation.xlsx");
@@ -169,43 +171,43 @@ public class ExcelWriteController {
 			.setBorder(BorderStyle.THIN)
 			.setVerticalAlignment(VerticalAlignment.CENTER)
 			.setAlignment(HorizontalAlignment.CENTER)
-			.end()
+			.addCellStyle()
 			.createSheet("Sheet 1")
 			.setDefaultColumnWidth(15)
 			// Set cell style of Sheet 1
 			.matchingAll()
 			.setFontColor(IndexedColors.RED)
-			.end()
+			.addCellStyle()
 			.createRow("cell1", "cell2", "cell3")
-			.matchingRow()
+			.matchingLastRow()
 			.setRowHeight(200)
-			.end()
+			.addCellStyle()
 			.matchingColumn(0)
 			.setColumnBreak()
 			.setColumnWidth(20)
-			.end()
+			.addCellStyle()
 			.createRow("cell1", "cell2", "cell3")
 			.createSheet("Sheet 2")
 			// Set cell style of Sheet 2
 			.matchingAll()
 			.setFontColor(IndexedColors.BLUE)
-			.end()
+			.addCellStyle()
 			// Set cell style of Sheet 2 and row number > 0
 			.matchingCell(cell -> cell.getRowIndex() > 0)
 			.setFillForegroundColor(IndexedColors.GREY_25_PERCENT)
-			.end()
+			.addCellStyle()
 			.createRow("cell1", "cell2", "cell3")
 			.createRow("cell1", "cell2", "cell3")
 			.matchingColumn(2)
 			.setColumnHidden(true)
-			.end()
+			.addCellStyle()
 			.createSheet("Sheet 3")
 			.setDefaultRowHeight(30)
 			// Set cell style of Sheet 3
 			.matchingAll()
 			.setFontColor(IndexedColors.GREEN)
 			.setItalic(true)
-			.end()
+			.addCellStyle()
 			.createRow("cell1", "cell2", "cell3")
 			.createRow("cell1", "cell2", "cell3")
 			.build();
@@ -226,25 +228,25 @@ public class ExcelWriteController {
 			.setFillForegroundColor(IndexedColors.GREY_25_PERCENT)
 			.setBorder(BorderStyle.THIN)
 			.setBottomBorderColor(IndexedColors.RED)
-			.end()
+			.addCellStyle()
 			.matchingRow(1)
 			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 			.setFillForegroundColor(IndexedColors.LIGHT_YELLOW)
 			.setBorder(BorderStyle.THIN)
 			.setBottomBorderColor(IndexedColors.BROWN)
-			.end()
+			.addCellStyle()
 			.matchingRow(2)
 			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 			.setFillForegroundColor(IndexedColors.LIGHT_BLUE)
 			.setBorder(BorderStyle.THIN)
 			.setBottomBorderColor(IndexedColors.AQUA)
-			.end()
+			.addCellStyle()
 			.matchingRow(3)
 			.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 			.setFillForegroundColor(IndexedColors.LIGHT_ORANGE)
 			.setBorder(BorderStyle.THIN)
 			.setBottomBorderColor(IndexedColors.VIOLET)
-			.end()
+			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.setHeader("Content-disposition", "attachment; filename=addRowStyle.xlsx");
@@ -260,17 +262,17 @@ public class ExcelWriteController {
 			.createSheet("Sheet 1")
 			.matchingColumn(0)
 			.setDataFormat("yyyy-MM-dd")
-			.end()
+			.addCellStyle()
 			.matchingRegion(1, 5, 0, 0)
 			.setDataFormat("yyyy/MM/dd")
 			.fillUndefinedCells()
 			.matchingColumn(1)
 			.setDataFormat("#.##00")
 			.setFontColor(IndexedColors.RED)
-			.end()
+			.addCellStyle()
 			.matchingColumn(2)
 			.setDataFormat("[=1]\"male\";[=2]\"female\"")
-			.end()
+			.addCellStyle()
 			.createRow(new Date(), 22.121f, 1)
 			.createRow(new Date(), 123.1d, 2)
 			.build();
@@ -302,7 +304,6 @@ public class ExcelWriteController {
 			.setBorderColor(IndexedColors.DARK_RED)
 			.setBorder(BorderStyle.DOUBLE)
 			.setFontHeight(20)
-			// add cell style to the defined cell
 			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
@@ -358,7 +359,7 @@ public class ExcelWriteController {
 			.matchingAll()
 			.setBorder(BorderStyle.DOUBLE)
 			.setBorderColor(IndexedColors.CORNFLOWER_BLUE)
-			.end()
+			.addCellStyle()
 			.createSheet("Sheet 1")
 			.matchingCell(cell -> {
 				// match health column
@@ -375,7 +376,7 @@ public class ExcelWriteController {
 			.setStrikeout(true)
 			.setFontHeight(30)
 			.setFontColor(IndexedColors.RED.getIndex())
-			.end()
+			.addCellStyle()
 			.rowType(Owner.class)
 			// All fields
 			.createHeader()
@@ -394,31 +395,27 @@ public class ExcelWriteController {
 		WorkbookBuilder workbookBuilder = WorkbookBuilder.builder()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30);
-		SheetBuilder sheetBuilder = null;
 		for (Owner owner : owners) {
-			sheetBuilder = workbookBuilder.createSheet(owner.getFullName())
+			workbookBuilder = workbookBuilder.createSheet(owner.getFullName())
 				.rowType(Owner.class)
 				.createHeader("fullName", "address", "city", "telephone")
 				.createRow(owner)
-				.end()
 				.createRow()
 				.createRow("Pets")
-				.matchingRegion(3, 3, 0, 8)
-				.addMergedRegion()
-				.matchingRow()
-				.setRowHeight(50)
-				.end()
+				.matchingLastRow()
+				.setFillForegroundColor(IndexedColors.GOLD)
+				.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+				.addCellStyle()
+				.createCell("aaa")
 				.rowType(Pet.class)
 				.createHeader()
 				.createRows(owner.getPets())
 				.end();
 		}
-		if (sheetBuilder != null) {
-			Workbook workbook = sheetBuilder.build();
-			try (ServletOutputStream out = response.getOutputStream()) {
-				response.setHeader("Content-disposition", "attachment; filename=createNestedBeanSheet.xlsx");
-				workbook.write(out);
-			}
+		Workbook workbook = workbookBuilder.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=createNestedBeanSheet.xlsx");
+			workbook.write(out);
 		}
 	}
 
