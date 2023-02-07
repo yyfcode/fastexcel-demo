@@ -2,12 +2,12 @@ package com.jeeapp.excel.demo.entity;
 
 import java.util.Date;
 
-import com.jeeapp.excel.annotation.ExcelProperty;
-import com.jeeapp.excel.annotation.ExcelProperty.Header;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import com.jeeapp.excel.annotation.ExcelProperty;
+import com.jeeapp.excel.annotation.ExcelProperty.Header;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 @AllArgsConstructor
 public class Visit {
 
-	@ExcelProperty(name = "name", column = 0,
+	@ExcelProperty(name = "name1", column = 0,
 		header = @Header(fillForegroundColor = IndexedColors.CORAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private String name;
 

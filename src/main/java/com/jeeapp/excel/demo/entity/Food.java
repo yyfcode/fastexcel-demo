@@ -17,7 +17,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Validation;
 @AllArgsConstructor
 public class Food {
 
-	@ExcelProperty(name = "name", column = 0,
+	@ExcelProperty(name = "name2", column = 0,
 		header = @Header(fillForegroundColor = IndexedColors.TURQUOISE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("Health status of pets")),
 		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"meat", "water", "egg"}))
