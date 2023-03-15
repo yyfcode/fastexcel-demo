@@ -340,7 +340,7 @@ public class ExcelWriteController {
 			.createSheet("Sheet 1")
 			.rowType(Owner.class)
 			// partial fields
-			.createHeader("fullName", "address", "city", "telephone", "pets.name", "pets.birthday", "pets.type")
+			.createHeader("fullName", "address", "city", "telephone", "pets.visits", "pets.birthday", "pets.type")
 			.createRows(owners)
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {

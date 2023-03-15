@@ -31,9 +31,9 @@ public class Pet {
 		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"dog", "cat"}))
 	private String type;
 
-	@ExcelProperty(name = "birthDate", column = 2, format = "yyyy-MM-dd", width = 20,
+	@ExcelProperty(name = "birthday", column = 2, format = "yyyy-MM-dd", width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.GREEN, fillPatternType = FillPatternType.SOLID_FOREGROUND))
-	private Date birthDate;
+	private Date birthday;
 
 	@ExcelProperty(name = "health", column = 2, format = "00", width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.YELLOW, fillPatternType = FillPatternType.SOLID_FOREGROUND,
