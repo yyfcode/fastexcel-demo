@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import com.jeeapp.excel.annotation.ExcelProperty;
@@ -16,6 +17,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Header;
  * @author Justice
  */
 @Data
+@NoArgsConstructor
 public class Owner {
 
 	@ExcelProperty(name = "fullName", column = 0,

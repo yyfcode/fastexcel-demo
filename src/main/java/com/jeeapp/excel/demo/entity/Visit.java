@@ -4,6 +4,7 @@ import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import com.jeeapp.excel.annotation.ExcelProperty;
@@ -14,6 +15,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Header;
  * @author Justice
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Visit {
 

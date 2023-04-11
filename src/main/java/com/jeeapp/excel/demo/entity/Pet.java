@@ -6,6 +6,7 @@ import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.DataValidationConstraint.ValidationType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -19,6 +20,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Validation;
  * @author Justice
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Pet {
 
@@ -35,7 +37,7 @@ public class Pet {
 		header = @Header(fillForegroundColor = IndexedColors.GREEN, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private Date birthday;
 
-	@ExcelProperty(name = "health", column = 2, format = "00", width = 20,
+	@ExcelProperty(name = "health", column = 2, format = "00", width = 30,
 		header = @Header(fillForegroundColor = IndexedColors.YELLOW, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 		comment = @Comment("Health status of pets")))
 	private Integer health;

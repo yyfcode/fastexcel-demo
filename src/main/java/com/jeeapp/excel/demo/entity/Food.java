@@ -2,6 +2,7 @@ package com.jeeapp.excel.demo.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.DataValidationConstraint.ValidationType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -14,6 +15,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Validation;
  * @author Justice
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Food {
 

@@ -3,13 +3,14 @@ package com.jeeapp.excel.demo.controller;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -27,10 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.jeeapp.excel.builder.WorkbookBuilder;
-import com.jeeapp.excel.demo.entity.Food;
 import com.jeeapp.excel.demo.entity.Owner;
 import com.jeeapp.excel.demo.entity.Pet;
-import com.jeeapp.excel.demo.entity.Visit;
 import com.jeeapp.excel.util.CellUtils;
 
 /**
@@ -316,35 +315,25 @@ public class ExcelWriteController {
 	@PostMapping(value = "createBeanRow", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void createBeanRow(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
-		Workbook workbook = WorkbookBuilder.builder()
-			.setDefaultColumnWidth(30)
-			.createSheet("Sheet 1")
-			.rowType(Owner.class)
-			// Partial fields
-			.createHeader("fullName", "address", "city", "telephone")
-			.createRows(owners)
-			.build();
-		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=createBeanRow.xlsx");
-			workbook.write(out);
-		}
-	}
-
-	@Operation(summary = "Create bean row with partial fields")
-	@PostMapping(value = "createBeanRowWithPartialFields", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public void createBeanRowWithPartialFields(HttpServletResponse response) throws Exception {
-		List<Owner> owners = createOwners();
-		Workbook workbook = WorkbookBuilder.builder()
+		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook(100))
+			.matchingAll()
+			.setFontHeight(12)
+			.setFontName("微软雅黑")
+			.setVerticalAlignment(VerticalAlignment.CENTER)
+			.setAlignment(HorizontalAlignment.CENTER)
+			.addCellStyle()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30)
 			.createSheet("Sheet 1")
 			.rowType(Owner.class)
-			// partial fields
 			.createHeader("fullName", "address", "city", "telephone", "pets.visits", "pets.birthday", "pets.type")
 			.createRows(owners)
+			.matchingLastRow()
+			.setRightBorderColor(IndexedColors.AQUA)
+			.addCellStyle()
 			.build();
 		try (ServletOutputStream out = response.getOutputStream()) {
-			response.setHeader("Content-disposition", "attachment; filename=createBeanRowWithPartialFields.xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=createBeanRow.xlsx");
 			workbook.write(out);
 		}
 	}
@@ -353,7 +342,13 @@ public class ExcelWriteController {
 	@PostMapping(value = "createNestedBeanRow", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void createNestedBeanRow(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
-		Workbook workbook = WorkbookBuilder.builder()
+		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook(1000))
+			.matchingAll()
+			.setFontHeight(12)
+			.setFontName("微软雅黑")
+			.setVerticalAlignment(VerticalAlignment.CENTER)
+			.setAlignment(HorizontalAlignment.CENTER)
+			.addCellStyle()
 			.setDefaultRowHeight(30)
 			.setDefaultColumnWidth(30)
 			.matchingAll()
@@ -421,75 +416,15 @@ public class ExcelWriteController {
 	}
 
 	private List<Owner> createOwners() {
-		Owner george = new Owner();
-		george.setFullName("George Franklin");
-		george.setAddress("110 W. Liberty St.");
-		george.setCity("Madison");
-		george.setTelephone("6085551023");
-		george.addPet(new Pet("dog1", "dog", new Date(), 50, new HashSet<>(Arrays.asList(
-			new Visit("visit1", new Date(), "..."),
-			new Visit("visit2", new Date(), "..."),
-			new Visit("visit3", new Date(), "...")
-		)),
-			Arrays.asList(
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4)
-			)));
-		george.addPet(new Pet("dog2", "dog", new Date(), 95, new HashSet<>(Arrays.asList(
-			new Visit("visit4", new Date(), "...."),
-			new Visit("visit5", new Date(), "..."))),
-			Arrays.asList(
-				new Food("1", 1),
-				new Food("4", 4)
-			)));
-		george.addPet(new Pet("dog3", "dog", new Date(), 100, new HashSet<>(Arrays.asList(
-			new Visit("visit6", new Date(), "..."),
-			new Visit("visit7", new Date(), "..."),
-			new Visit("visit8", new Date(), "..."))),
-			Arrays.asList(
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4),
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4),
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4)
-			)));
+		EasyRandom easyRandom = new EasyRandom((new EasyRandomParameters()
+			.scanClasspathForConcreteTypes(true)
+			.collectionSizeRange(0, 20)
+			.overrideDefaultInitialization(true)));
 
-		Owner joe = new Owner();
-		joe.setFullName("Joe Bloggs");
-		joe.setAddress("123 Caramel Street");
-		joe.setCity("London");
-		joe.setTelephone("01616291589");
-		joe.addPet(new Pet("cat1", "cat", new Date(), 20, new HashSet<>(Arrays.asList(
-			new Visit("visit9", new Date(), "..."),
-			new Visit("visit10", new Date(), "..."),
-			new Visit("visit11", new Date(), "..."))),
-			Arrays.asList(
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4),
-				new Food("1", 1),
-				new Food("2", 2),
-				new Food("3", 3),
-				new Food("4", 4)
-			)));
-		joe.addPet(new Pet("cat2", "cat", new Date(), 90, new HashSet<>(Arrays.asList(
-			new Visit("visit12", new Date(), "..."),
-			new Visit("visit13", new Date(), "..."),
-			new Visit("visit14", new Date(), "..."))),
-			Arrays.asList(
-				new Food("1", 1),
-				new Food("2", 2)
-			)));
-		return Arrays.asList(george, joe);
+		List<Owner> owners = new ArrayList<>();
+		for (int i = 0; i < 50; i++) {
+			owners.add(easyRandom.nextObject(Owner.class));
+		}
+		return owners;
 	}
 }

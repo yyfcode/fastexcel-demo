@@ -4,12 +4,14 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import com.jeeapp.excel.annotation.ExcelProperty;
 
 /**
  * @author Justice
  */
 @Data
+@NoArgsConstructor
 public class Store {
 
 	@NotBlank
