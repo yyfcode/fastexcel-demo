@@ -15,12 +15,12 @@ import com.jeeapp.excel.annotation.ExcelProperty;
 public class Store {
 
 	@NotBlank
-	@ExcelProperty(name = "name", column = 0)
+	@ExcelProperty(name = "name", column = 0, width = 20)
 	private String name;
 
-	@ExcelProperty(name = "address", column = 1)
+	@ExcelProperty(name = "address", column = 1, width = 20)
 	private String address;
 
-	@ExcelProperty(name = "createDate", column = 2, format = "dd/MM/yy")
+	@ExcelProperty(name = "createDate", column = 2, width = 20, format = "dd/MM/yy")
 	private Date createDate;
 }

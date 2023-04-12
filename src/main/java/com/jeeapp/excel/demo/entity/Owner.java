@@ -20,24 +20,24 @@ import com.jeeapp.excel.annotation.ExcelProperty.Header;
 @NoArgsConstructor
 public class Owner {
 
-	@ExcelProperty(name = "fullName", column = 0,
+	@ExcelProperty(name = "fullName", column = 0, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private String fullName;
 
-	@ExcelProperty(name = "address", column = 1,
+	@ExcelProperty(name = "address", column = 1, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private String address;
 
-	@ExcelProperty(name = "city", column = 2,
+	@ExcelProperty(name = "city", column = 2, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private String city;
 
-	@ExcelProperty(name = "telephone", column = 3,
+	@ExcelProperty(name = "telephone", column = 3, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	@Digits(fraction = 0, integer = 10)
 	private String telephone;
 
-	@ExcelProperty(name = "pets", column = 4,
+	@ExcelProperty(name = "pets", column = 4, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.ROSE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("pet list")))
 	private List<Pet> pets = new ArrayList<>();

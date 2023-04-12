@@ -19,7 +19,7 @@ import com.jeeapp.excel.annotation.ExcelProperty.Header;
 @AllArgsConstructor
 public class Visit {
 
-	@ExcelProperty(name = "name1", column = 0,
+	@ExcelProperty(name = "name1", column = 0, width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.CORAL, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private String name;
 

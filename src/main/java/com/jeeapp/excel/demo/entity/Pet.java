@@ -42,12 +42,12 @@ public class Pet {
 		comment = @Comment("Health status of pets")))
 	private Integer health;
 
-	@ExcelProperty(name = "visits", column = 3,
+	@ExcelProperty(name = "visits", column = 3,width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.ORANGE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("visit list")))
 	private Set<Visit> visits;
 
-	@ExcelProperty(name = "foods", column = 4,
+	@ExcelProperty(name = "foods", column = 4,width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TEAL, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("food list")))
 	private List<Food> foods;

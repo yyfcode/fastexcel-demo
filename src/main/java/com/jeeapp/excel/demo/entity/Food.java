@@ -19,13 +19,13 @@ import com.jeeapp.excel.annotation.ExcelProperty.Validation;
 @AllArgsConstructor
 public class Food {
 
-	@ExcelProperty(name = "name2", column = 0,
+	@ExcelProperty(name = "name2", column = 0,width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.TURQUOISE, fillPatternType = FillPatternType.SOLID_FOREGROUND,
 			comment = @Comment("Health status of pets")),
 		validation = @Validation(validationType = ValidationType.LIST, explicitListValues = {"meat", "water", "egg"}))
 	private String name;
 
-	@ExcelProperty(name = "quantity", column = 1,
+	@ExcelProperty(name = "quantity", column = 1,width = 20,
 		header = @Header(fillForegroundColor = IndexedColors.DARK_RED, fillPatternType = FillPatternType.SOLID_FOREGROUND))
 	private Integer quantity;
 }

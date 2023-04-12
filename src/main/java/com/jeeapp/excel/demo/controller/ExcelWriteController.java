@@ -13,6 +13,7 @@ import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.DataValidation.ErrorStyle;
 import org.apache.poi.ss.usermodel.DataValidationConstraint.OperatorType;
@@ -89,18 +90,21 @@ public class ExcelWriteController {
 	@Operation(summary = "Create picture")
 	@PostMapping(value = "createPicture", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void createPicture(HttpServletResponse response) throws Exception {
-		byte[] bytes = IOUtils.toByteArray(new URL("https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png")
+		byte[] bytes = IOUtils.toByteArray(new URL("https://poi.apache.org/images/group-logo.png")
 			.openStream());
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
+			.matchingAll()
+			.setFontColor(IndexedColors.AQUA)
+			.setFontHeight(20)
+			.addCellStyle()
 			.setDefaultRowHeight(60)
 			.createSheet("Sheet 1")
 			.setDefaultColumnWidth(25)
 			.matchingRegion(0, 0, 0, 5)
 			.createPicture(bytes, Workbook.PICTURE_TYPE_PNG)
-			.addMergedRegion()
-			.matchingLastCell()
-			.createCellComment("aaa")
-			.addCellStyle()
+			.mergeRegion()
+			.createCellComment("hello world!")
+			.setCellValue("apache poi")
 			.matchingLastRow()
 			.setRowHeight(30)
 			.addCellStyle()
@@ -121,28 +125,68 @@ public class ExcelWriteController {
 		}
 	}
 
+	@Operation(summary = "Create hyperlink")
+	@PostMapping(value = "createHyperlink", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createHyperlink(HttpServletResponse response) throws Exception {
+		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
+			.setDefaultRowHeight(60)
+			.setDefaultColumnWidth(20)
+			.createSheet("Sheet 1")
+			.matchingCell(0, 0)
+			.createHyperlink(HyperlinkType.URL, "https://poi.apache.org/")
+			.matchingRegion(1, 1, 2, 3)
+			.mergeRegion()
+			.createHyperlink(HyperlinkType.URL, "https://poi.apache.org/")
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=createHyperlink.xlsx");
+			workbook.write(out);
+		}
+	}
+
+	@Operation(summary = "Create cell comment")
+	@PostMapping(value = "createCellComment", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public void createCellComment(HttpServletResponse response) throws Exception {
+		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
+			.setDefaultRowHeight(60)
+			.setDefaultColumnWidth(20)
+			.createSheet("Sheet 1")
+			.matchingCell(0, 0)
+			.createCellComment("hello world", "hello world")
+			.addCellStyle()
+			.matchingRegion(1, 1, 2, 3)
+			.mergeRegion()
+			.createCellComment("nothing to do")
+			.addCellStyle()
+			.build();
+		try (ServletOutputStream out = response.getOutputStream()) {
+			response.setHeader("Content-disposition", "attachment; filename=createCellComment.xlsx");
+			workbook.write(out);
+		}
+	}
+
 	@Operation(summary = "Create data validation")
 	@PostMapping(value = "createDataValidation", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void createDataValidation(HttpServletResponse response) throws Exception {
 		Workbook workbook = new WorkbookBuilder(new XSSFWorkbook())
 			.createSheet("Sheet 1")
-			.matchingCell(0, 0)
+			.matchingRegion(0, 10000, 0, 0)
 			.createExplicitListConstraint("a", "b")
 			.showErrorBox("error", "wrong data")
 			.showPromptBox("hint", "select a or b")
 			.setErrorStyle(ErrorStyle.INFO)
 			.addValidationData()
 			.addCellStyle()
-			.matchingCell(0, 1)
+			.matchingRegion(0, 10000, 1, 1)
 			.createDateConstraint(OperatorType.BETWEEN, "Date(2022,01,01)", "Date(2022,12,31)", "yyyy-MM-dd")
-			.showErrorBox("错误", "日期错误")
-			.showPromptBox("提示", "日期需要在20220101~20221231范围内")
+			.showErrorBox("error", "wrong date")
+			.showPromptBox("hint", "must be 20220101~20221231")
 			.addValidationData()
 			// 设置格式
 			.setDataFormat("yyyy-MM-dd")
 			// 设置格式必须创建单元格，否则单元格填值时不能格式化
-			.setBlank()
-			.matchingCell(0, 2)
+			.fillUndefinedCells()
+			.matchingRegion(0, 10000, 2, 2)
 			.createIntegerConstraint(OperatorType.BETWEEN, "50", "100")
 			.showErrorBox("error", "wrong number")
 			.showPromptBox("hint", "must be 50~100")
@@ -315,7 +359,7 @@ public class ExcelWriteController {
 	@PostMapping(value = "createBeanRow", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void createBeanRow(HttpServletResponse response) throws Exception {
 		List<Owner> owners = createOwners();
-		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook(100))
+		Workbook workbook = new WorkbookBuilder(new SXSSFWorkbook(1000))
 			.matchingAll()
 			.setFontHeight(12)
 			.setFontName("微软雅黑")
@@ -418,7 +462,7 @@ public class ExcelWriteController {
 	private List<Owner> createOwners() {
 		EasyRandom easyRandom = new EasyRandom((new EasyRandomParameters()
 			.scanClasspathForConcreteTypes(true)
-			.collectionSizeRange(0, 20)
+			.collectionSizeRange(0, 5)
 			.overrideDefaultInitialization(true)));
 
 		List<Owner> owners = new ArrayList<>();
